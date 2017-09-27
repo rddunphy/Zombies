@@ -11,8 +11,9 @@ class Context:
 
 class Command:
 
-	def __init__(self, verb):
+	def __init__(self, verb, object_):
 		self.verb = verb
+		self.object = object_
 
 
 VERBS = {
@@ -34,47 +35,58 @@ for verb in VERBS:
 def parse(s):
 	tokens = s.lower().split()
 	verb = tokens[0]
+	object_ = None
+	if len(tokens) > 1:
+		object_ = tokens[1]
 	if verb in VERB_ALIASES:
-		return Command(VERB_ALIASES[verb])
-	return Command(verb)
+		return Command(VERB_ALIASES[verb], object_)
+	return Command(verb, object_)
 
 
-def quit(ctx):
+def quit(cmd, ctx):
 	print('Thanks for playing, {}.'.format(ctx.name))
 	exit(0)
 
 
-def look(ctx):
+def look(cmd, ctx):
 	print('You see a zombie. It looks hungry.')
 
 
-def move(ctx):
+def move(cmd, ctx):
 	print('Moving...')
-	look(ctx)
+	look(cmd, ctx)
 
 
-def hit(ctx):
-	print('You punch the zombie. The zombie snarls and takes a bite out of you.')
-	damage = random.randint(20, 30)
-	ctx.health -= damage
-	print('[damage: {}, health: {}]'.format(damage, ctx.health))
+def hit(cmd, ctx):
+	if cmd.object == None:
+		print('What do you want to hit?')
+	elif cmd.object == 'zombie':
+		print('You punch the zombie. The zombie snarls and takes a bite out of you.')
+		damage = random.randint(20, 30)
+		ctx.health -= damage
+		print('[damage: {}, health: {}]'.format(damage, ctx.health))
+	else:
+		print('I don\'t know how to hit "' + cmd.object + '".')
 
 
-def help(ctx):
-	print('Try entering a verb followed by an object.')
+def help(cmd, ctx):
+	if cmd.object != None and cmd.object != 'me':
+		print('I don\'t know how to help "' + cmd.object + '".')
+	else:
+		print('Try entering a verb followed by an object.')
 
 
 def execute(cmd, ctx):
 	if cmd.verb == 'QUIT':
-		quit(ctx)
+		quit(cmd, ctx)
 	elif cmd.verb == 'LOOK':
-		look(ctx)
+		look(cmd, ctx)
 	elif cmd.verb == 'MOVE':
-		move(ctx)
+		move(cmd, ctx)
 	elif cmd.verb == 'HIT':
-		hit(ctx)
+		hit(cmd, ctx)
 	elif cmd.verb == 'HELP':
-		help(ctx)
+		help(cmd, ctx)
 	else:
 		print('I don\'t recognise the verb "' + cmd.verb + '".')
 
@@ -87,8 +99,7 @@ def get_input():
 
 
 def intro(ctx):
-	print('You wake up with a headache.')
-	look(ctx)
+	print('You wake up with a headache. In front of you is a zombie.')
 
 
 def game_over(ctx):
