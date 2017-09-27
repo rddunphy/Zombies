@@ -2,11 +2,23 @@ import argparse
 import random
 
 
+class Location:
+
+	def __init__(self, description, directions):
+		self.description = description
+		self.directions = directions
+
+
 class Context:
 
-	def __init__(self, name):
+	def __init__(self, name, location):
 		self.name = name
 		self.health = 100
+		self.location = location
+
+	def move(self, direction):
+		loc = self.location.directions[direction]
+		self.location = LOCATIONS[loc]
 
 
 class Command:
@@ -14,6 +26,15 @@ class Command:
 	def __init__(self, verb, object_):
 		self.verb = verb
 		self.object = object_
+
+
+LOCATIONS = {
+	0 : Location("Centre of square", {'north' : 1, 'south' : 2, 'east' : 3, 'west' : 4}),
+	1 : Location("North side of square", {'south' : 0, 'east' : 3, 'west' : 4}),
+	2 : Location("South side of square", {'north' : 0, 'east' : 3, 'west' : 4}),
+	3 : Location("East side of square", {'west' : 0, 'north' : 1, 'south' : 2}),
+	4 : Location("West side of square", {'east' : 0, 'north' : 1, 'south' : 2})
+}
 
 
 VERBS = {
@@ -49,12 +70,18 @@ def quit(cmd, ctx):
 
 
 def look(cmd, ctx):
+	print(ctx.location.description)
 	print('You see a zombie. It looks hungry.')
 
 
 def move(cmd, ctx):
-	print('Moving...')
-	look(cmd, ctx)
+	if cmd.object == None:
+		print('Where do you want to go?')
+	elif cmd.object in ctx.location.directions:
+		ctx.move(cmd.object)
+		look(cmd, ctx)
+	else:
+		print('I don\'t know how to go "' + cmd.object + '"')
 
 
 def hit(cmd, ctx):
@@ -131,7 +158,7 @@ def run():
 		print('Please enter your name.')
 		name = get_input()
 		print('Hi, {}!'.format(name))
-	ctx = Context(name)
+	ctx = Context(name, LOCATIONS[0])
 	intro(ctx)
 	repl(ctx)
 
