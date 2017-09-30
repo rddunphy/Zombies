@@ -12,13 +12,22 @@ def unknown_object(verb, obj):
 
 
 def exit_(cmd, ctx):
-    print('Thanks for playing, {}.'.format(ctx.name))
-    sys.exit(0)
+    if cmd.object:
+        unknown_object(cmd.verb, cmd.object)
+    else:
+        print('Thanks for playing, {}.'.format(ctx.name))
+        sys.exit(0)
 
 
 def look(cmd, ctx):
-    print(ctx.location.description)
-    print('You see a zombie. It looks hungry.')
+    item = cmd.object
+    if item in ctx.location.items:
+        print(ctx.location.items[item].description)
+    elif not item:
+        print(ctx.location.description)
+        print('You see a zombie. It looks hungry.')
+    else:
+        unknown_object('look at', item)
 
 
 def move(cmd, ctx):
@@ -72,7 +81,7 @@ def get_input():
     return get_input()
 
 
-def intro(ctx):
+def intro():
     print('You wake up with a headache. In front of you is a zombie.')
 
 
@@ -106,7 +115,7 @@ def run():
         name = get_input()
         print('Hi, {}!'.format(name))
     ctx = Context(name, LOCATIONS[0])
-    intro(ctx)
+    intro()
     repl(Parser(), ctx)
 
 
