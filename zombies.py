@@ -1,8 +1,9 @@
 import argparse
 import random
+import sys
 
-from Navigation.Context import Context
-from Navigation.Location import LOCATIONS
+from Map.Context import Context
+from Map.Location import LOCATIONS
 from Parser.Command import Command
 
 VERBS = {
@@ -10,7 +11,7 @@ VERBS = {
     'HIT': ['hit', 'punch'],
     'LOOK': ['look', 'examine', 'inspect', 'l'],
     'MOVE': ['go', 'walk', 'move'],
-    'QUIT': ['exit', 'quit', 'q']
+    'EXIT': ['exit', 'quit', 'q']
 }
 
 VERB_ALIASES = {}
@@ -31,9 +32,9 @@ def parse(s):
     return Command(verb, object_)
 
 
-def quit(cmd, ctx):
+def exit_(cmd, ctx):
     print('Thanks for playing, {}.'.format(ctx.name))
-    exit(0)
+    sys.exit(0)
 
 
 def look(cmd, ctx):
@@ -42,7 +43,7 @@ def look(cmd, ctx):
 
 
 def move(cmd, ctx):
-    if cmd.object == None:
+    if not cmd.object:
         print('Where do you want to go?')
     elif cmd.object in ctx.location.directions:
         ctx.move(LOCATIONS, cmd.object)
@@ -63,16 +64,16 @@ def hit(cmd, ctx):
         print('I don\'t know how to hit "' + cmd.object + '".')
 
 
-def help(cmd, ctx):
-    if cmd.object != None and cmd.object != 'me':
+def help_(cmd, ctx):
+    if cmd.object and cmd.object != 'me':
         print('I don\'t know how to help "' + cmd.object + '".')
     else:
         print('Try entering a verb followed by an object.')
 
 
 def execute(cmd, ctx):
-    if cmd.verb == 'QUIT':
-        quit(cmd, ctx)
+    if cmd.verb == 'EXIT':
+        exit_(cmd, ctx)
     elif cmd.verb == 'LOOK':
         look(cmd, ctx)
     elif cmd.verb == 'MOVE':
@@ -80,14 +81,14 @@ def execute(cmd, ctx):
     elif cmd.verb == 'HIT':
         hit(cmd, ctx)
     elif cmd.verb == 'HELP':
-        help(cmd, ctx)
+        help_(cmd, ctx)
     else:
         print('I don\'t recognise the verb "' + cmd.verb + '".')
 
 
 def get_input():
     s = input('> ').strip()
-    if (len(s) > 0):
+    if len(s) > 0:
         return s
     return get_input()
 
@@ -100,7 +101,7 @@ def game_over(ctx):
     print('{}, you are now a zombie.'.format(ctx.name))
     print('Enjoy your afterlife!')
     print('**** GAME OVER ****')
-    exit(0)
+    sys.exit(0)
 
 
 def repl(ctx):
