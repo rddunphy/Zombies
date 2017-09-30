@@ -4,32 +4,7 @@ import sys
 
 from Map.Context import Context
 from Map.Location import LOCATIONS
-from Parser.Command import Command
-
-VERBS = {
-    'HELP': ['help'],
-    'HIT': ['hit', 'punch'],
-    'LOOK': ['look', 'examine', 'inspect', 'l'],
-    'MOVE': ['go', 'walk', 'move'],
-    'EXIT': ['exit', 'quit', 'q']
-}
-
-VERB_ALIASES = {}
-
-for verb in VERBS:
-    for alias in VERBS[verb]:
-        VERB_ALIASES[alias] = verb
-
-
-def parse(s):
-    tokens = s.lower().split()
-    verb = tokens[0]
-    object_ = None
-    if len(tokens) > 1:
-        object_ = tokens[1]
-    if verb in VERB_ALIASES:
-        return Command(VERB_ALIASES[verb], object_)
-    return Command(verb, object_)
+from Parser.Parser import Parser
 
 
 def exit_(cmd, ctx):
@@ -104,14 +79,14 @@ def game_over(ctx):
     sys.exit(0)
 
 
-def repl(ctx):
+def repl(parser, ctx):
     s = get_input()
-    cmd = parse(s)
+    cmd = parser.parse(s)
     execute(cmd, ctx)
     if ctx.health <= 0:
         game_over(ctx)
     else:
-        repl(ctx)
+        repl(parser, ctx)
 
 
 def run():
@@ -128,7 +103,7 @@ def run():
         print('Hi, {}!'.format(name))
     ctx = Context(name, LOCATIONS[0])
     intro(ctx)
-    repl(ctx)
+    repl(Parser(), ctx)
 
 
 if __name__ == '__main__':
