@@ -7,6 +7,10 @@ from Map.Location import LOCATIONS
 from Parser.Parser import Parser
 
 
+def unknown_object(verb, obj):
+    print('I don\'t know how to ' + verb + ' "' + obj + '".')
+
+
 def exit_(cmd, ctx):
     print('Thanks for playing, {}.'.format(ctx.name))
     sys.exit(0)
@@ -24,11 +28,11 @@ def move(cmd, ctx):
         ctx.move(LOCATIONS, cmd.object)
         look(cmd, ctx)
     else:
-        print('I don\'t know how to go "' + cmd.object + '"')
+        unknown_object('go', cmd.object)
 
 
 def hit(cmd, ctx):
-    if cmd.object == None:
+    if not cmd.object:
         print('What do you want to hit?')
     elif cmd.object == 'zombie':
         print('You punch the zombie. The zombie snarls and takes a bite out of you.')
@@ -36,12 +40,12 @@ def hit(cmd, ctx):
         ctx.health -= damage
         print('[damage: {}, health: {}]'.format(damage, ctx.health))
     else:
-        print('I don\'t know how to hit "' + cmd.object + '".')
+        unknown_object(cmd.verb, cmd.object)
 
 
-def help_(cmd, ctx):
+def help_(cmd):
     if cmd.object and cmd.object != 'me':
-        print('I don\'t know how to help "' + cmd.object + '".')
+        unknown_object(cmd.verb, cmd.object)
     else:
         print('Try entering a verb followed by an object.')
 
@@ -56,7 +60,7 @@ def execute(cmd, ctx):
     elif cmd.verb == 'HIT':
         hit(cmd, ctx)
     elif cmd.verb == 'HELP':
-        help_(cmd, ctx)
+        help_(cmd)
     else:
         print('I don\'t recognise the verb "' + cmd.verb + '".')
 
