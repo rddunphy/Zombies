@@ -4,66 +4,59 @@ import sys
 from Map.Location import LOCATIONS
 
 
-def print_block(lines):
-    if isinstance(lines, list):
-        s = '\n'.join(lines)
-    else:
-        s = lines
-    print('\n' + s + '\n')
-
-
-def unknown_object(verb, obj):
-    print_block('I don\'t know how to ' + verb + ' "' + obj + '".')
+def unknown_object(ctx, verb, obj):
+    ctx.console.print_block('I don\'t know how to {} "{}".'.format(verb, obj))
 
 
 def exit_(cmd, ctx):
     if cmd.object:
-        unknown_object(cmd.verb, cmd.object)
+        unknown_object(ctx, cmd.verb, cmd.object)
     else:
-        print_block('Thanks for playing, {}.'.format(ctx.name))
+        ctx.console.print_block('Thanks for playing, {}.'.format(ctx.name))
         sys.exit(0)
 
 
 def look(cmd, ctx):
     item = cmd.object
     if item in ctx.location.items:
-        print_block(ctx.location.items[item].description)
+        ctx.console.print_block(ctx.location.items[item].description)
     elif not item:
-        print_block(ctx.location.description)
+        ctx.console.print_block('Some longer description', title=ctx.location.description)
     else:
-        unknown_object('look at', item)
+        unknown_object(ctx, 'look at', item)
 
 
 def move(cmd, ctx):
     if not cmd.object:
-        print_block('Where do you want to go?')
+        ctx.console.print_block('Where do you want to go?')
     elif cmd.object in ctx.location.directions:
         ctx.move(LOCATIONS, cmd.object)
         cmd.object = None
         look(cmd, ctx)
     else:
-        unknown_object('go', cmd.object)
+        unknown_object(ctx, 'go', cmd.object)
 
 
 def hit(cmd, ctx):
     if not cmd.object:
-        print_block('What do you want to hit?')
+        ctx.console.print_block('What do you want to hit?')
     elif cmd.object == 'zombie':
-        lines = []
-        lines.append('You punch the zombie. The zombie snarls and takes a bite out of you.')
         damage = random.randint(20, 30)
         ctx.health -= damage
-        lines.append('[damage: {}, health: {}]'.format(damage, ctx.health))
-        print_block(lines)
+        stats = [
+            'damage: {}'.format(damage),
+            'health: {}'.format(ctx.health)
+        ]
+        ctx.console.print_block('You punch the zombie. The zombie snarls and takes a bite out of you.', stats=stats)
     else:
-        unknown_object(cmd.verb, cmd.object)
+        unknown_object(ctx, cmd.verb, cmd.object)
 
 
-def help_(cmd):
+def help_(cmd, ctx):
     if cmd.object and cmd.object != 'me':
-        unknown_object(cmd.verb, cmd.object)
+        unknown_object(ctx, cmd.verb, cmd.object)
     else:
-        print_block('Try entering a verb followed by an object.')
+        ctx.console.print_block('Try entering a verb followed by an object.')
 
 
 def execute(cmd, ctx):
@@ -76,6 +69,6 @@ def execute(cmd, ctx):
     elif cmd.verb == 'HIT':
         hit(cmd, ctx)
     elif cmd.verb == 'HELP':
-        help_(cmd)
+        help_(cmd, ctx)
     else:
-        print_block('I don\'t recognise the verb "' + cmd.verb + '".')
+        ctx.console.print_block('I don\'t recognise the verb "' + cmd.verb + '".')
