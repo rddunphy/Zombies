@@ -23,12 +23,15 @@ class Parser:
             for alias in VERBS[verb]:
                 self.verb_aliases[alias] = verb
 
-    def parse(self, s):
+    def parse(self, s, ctx):
         tokens = s.lower().split()
         verb = tokens[0]
         object_ = None
         if len(tokens) > 1:
             object_ = tokens[1]
-        if verb in self.verb_aliases:
+        if verb in self.verb_aliases and (not object_ or object_ in ctx.available_items()):
+            ctx.known_words.add(verb)
+            if object_:
+                ctx.known_words.add(object_)
             return Command(self.verb_aliases[verb], object_)
         return Command(verb, object_)

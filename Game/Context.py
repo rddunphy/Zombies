@@ -10,3 +10,6 @@ class Context:
     def move(self, locations, direction):
         loc = self.location.directions[direction]
         self.location = locations[loc]
+
+    def available_items(self):
+        return list(self.inventory.keys()) + list(self.location.items.keys())
