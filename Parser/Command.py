@@ -1,8 +1,7 @@
 class Command:
-    def __init__(self, verb, object_):
-        """
-
-        :rtype:
-        """
+    
+    def __init__(self, verb, direct=None, indirect=None, using=None):
         self.verb = verb
-        self.object = object_
+        self.direct = direct
+        self.indirect = indirect
+        self.using = using

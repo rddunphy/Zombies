@@ -27,7 +27,8 @@ def game_over(ctx):
 def repl(parser, ctx):
     s = ctx.console.get_input(ctx)
     cmd = parser.parse(s, ctx)
-    execute(cmd, ctx)
+    if cmd:
+        execute(cmd, ctx)
     if ctx.health <= 0:
         game_over(ctx)
     else:
