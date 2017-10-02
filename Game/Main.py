@@ -10,7 +10,7 @@ from Parser.Parser import Parser
 def intro(ctx):
     ctx.console.print_block([
         'Hello, {}!'.format(ctx.name),
-        'You wake up with a headache. In front of you is a zombie.'
+        'You wake up with a headache.'
     ])
 
 

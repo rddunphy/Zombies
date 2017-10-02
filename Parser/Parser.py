@@ -12,6 +12,10 @@ VERBS = {
 }
 
 
+def is_valid_object(ctx, object_):
+    return not object_ or object_ in ctx.available_items() or object_ in {'north', 'south', 'east', 'west'}
+
+
 class Parser:
 
     def __init__(self):
@@ -29,7 +33,7 @@ class Parser:
         object_ = None
         if len(tokens) > 1:
             object_ = tokens[1]
-        if verb in self.verb_aliases and (not object_ or object_ in ctx.available_items()):
+        if verb in self.verb_aliases and is_valid_object(ctx, object_):
             ctx.known_words.add(verb)
             if object_:
                 ctx.known_words.add(object_)
