@@ -4,9 +4,11 @@ from Parser.Command import Command
 VERBS = {
     'HELP': ['help'],
     'HIT': ['hit', 'punch'],
-    'LOOK': ['look', 'examine', 'inspect', 'l'],
+    'LOOK': ['look', 'examine', 'inspect'],
     'MOVE': ['go', 'walk', 'move'],
-    'EXIT': ['exit', 'quit', 'q']
+    'EXIT': ['exit', 'quit'],
+    'TAKE': ['take'],
+    'INVENTORY': ['inventory']
 }
 
 

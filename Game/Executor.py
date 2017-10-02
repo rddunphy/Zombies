@@ -26,6 +26,25 @@ def look(cmd, ctx):
         unknown_object(ctx, 'look at', item)
 
 
+def take(cmd, ctx):
+    item = cmd.object
+    if not item:
+        ctx.console.print_block('What do you want to pick up?')
+    elif item in ctx.location.items:
+        ctx.inventory[item] = ctx.location.items[item]
+        del ctx.location.items[item]
+        ctx.console.print_block('You pick up the {}'.format(item))
+    else:
+        unknown_object(ctx, 'pick up', item)
+
+
+def inventory(cmd, ctx):
+    if cmd.object:
+        unknown_object(cmd, cmd.verb, cmd.object)
+    else:
+        ctx.console.print_block('Your inventory contains:', stats=ctx.inventory.keys())
+
+
 def move(cmd, ctx):
     if not cmd.object:
         ctx.console.print_block('Where do you want to go?')
@@ -70,5 +89,9 @@ def execute(cmd, ctx):
         hit(cmd, ctx)
     elif cmd.verb == 'HELP':
         help_(cmd, ctx)
+    elif cmd.verb == 'TAKE':
+        take(cmd, ctx)
+    elif cmd.verb == 'INVENTORY':
+        inventory(cmd, ctx)
     else:
         ctx.console.print_block('I don\'t recognise the verb "' + cmd.verb + '".')
