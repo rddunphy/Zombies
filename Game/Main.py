@@ -25,7 +25,7 @@ def game_over(ctx):
 
 
 def repl(parser, ctx):
-    s = ctx.console.get_input()
+    s = ctx.console.get_input(ctx)
     cmd = parser.parse(s)
     execute(cmd, ctx)
     if ctx.health <= 0:
@@ -41,7 +41,7 @@ def start_game(name, plaintext):
             'Hello, future zombie!',
             'Please enter your name.'
         ])
-        name = console.get_input()
+        name = console.get_input(None)
     ctx = Context(name, LOCATIONS[0], console)
     intro(ctx)
     repl(Parser(), ctx)
