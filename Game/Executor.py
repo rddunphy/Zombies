@@ -21,7 +21,7 @@ def look(cmd, ctx):
     if item in ctx.location.items:
         ctx.console.print_block(ctx.location.items[item].description)
     elif not item:
-        ctx.console.print_block('Some longer description', title=ctx.location.description)
+        ctx.console.print_block(ctx.location.description, title=ctx.location.name)
     else:
         unknown_object(ctx, 'look at', item)
 
