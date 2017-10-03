@@ -62,14 +62,17 @@ class Parser:
             cmd = Command(verb, direction=direction)
         else:
             direct, tokens = self.parse_object(tokens)
+            indirect = None
             if tokens and tokens[0] == 'to':
                 tokens = tokens[1:]
                 if not tokens:
                     raise ParseError('{} to what?'.format(capitalise_first_letter(str(verb))))
-                indirect = direct
-                direct, tokens = self.parse_object(tokens)
-            else:
                 indirect, tokens = self.parse_object(tokens)
+            else:
+                obj2, tokens = self.parse_object(tokens)
+                if obj2:
+                    indirect = direct
+                    direct = obj2
             using = None
             if tokens and (tokens[0] == 'with' or tokens[0] == 'using'):
                 tokens = tokens[1:]

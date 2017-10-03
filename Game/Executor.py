@@ -51,10 +51,10 @@ def look(cmd, ctx):
         if not items:
             unknown_object(ctx, cmd.verb, obj)
         elif len(items) == 1:
-            ctx.console.print_block(items[0].description)
+            ctx.console.print_block(items[0].get_description(ctx))
         elif obj.plural:
             for item in items:
-                ctx.console.print_block(item.description)
+                ctx.console.print_block(item.get_description(ctx))
         else:
             ambiguous_object(ctx, cmd.verb, obj)
 
@@ -170,5 +170,34 @@ def help_(cmd, ctx):
     ctx.console.print_block('Try entering a verb followed by an object.')
 
 
+def give_item(ctx, item, recipient):
+    ctx.inventory.remove(item)
+    msg = 'You give the {} to the {}.'.format(item, recipient)
+    recipient.receive(ctx, item, msg)
+
+
 def give(cmd, ctx):
-    print('giving not yet implemented')
+    obj = cmd.direct
+    obj2 = cmd.indirect
+    if not obj:
+        ctx.console.print_block('What do you want to give?')
+    elif not obj2:
+        ctx.console.print_block('Who do you want to give the {} to?'.format(obj))
+    else:
+        recipients = locate_object_in_location(ctx, obj2)
+        if not recipients:
+            unknown_object(ctx, cmd.verb, obj2)
+        elif len(recipients) == 1:
+            recipient = recipients[0]
+            items = locate_object_in_inventory(ctx, obj)
+            if not items:
+                unknown_object(ctx, cmd.verb, obj)
+            elif len(items) == 1:
+                give_item(ctx, items[0], recipient)
+            elif obj.plural:
+                for item in items:
+                    give_item(ctx, item, recipient)
+            else:
+                ambiguous_object(ctx, cmd.verb, obj)
+        else:
+            ambiguous_object(ctx, cmd.verb, obj2)

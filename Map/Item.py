@@ -21,3 +21,10 @@ class Item:
 
     def hit(self, ctx, damage, msg):
         ctx.console.print_block(' '.join([msg, 'Nothing interesting happens.']))
+
+    def receive(self, ctx, item, msg):
+        ctx.console.print_block(' '.join([msg, 'It\'s and inanimate object, so it doesn\'t seem interested.']))
+        ctx.location.items.append(item)
+
+    def get_description(self, ctx):
+        return self.description
