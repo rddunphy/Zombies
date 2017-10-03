@@ -100,7 +100,23 @@ def hit(cmd, ctx):
         if not items:
             unknown_object(ctx, cmd.verb, obj)
         elif len(items) == 1:
-            items[0].hit(ctx)
+            target = items[0]
+            obj2 = cmd.using
+            if not obj2:
+                damage = random.randint(10, 20)
+                target.hit(ctx, damage, 'You punch the {}.'.format(str(target)))
+            else:
+                weapons = locate_object(ctx, obj2)
+                if not weapons:
+                    ctx.console.print_block('You don\'t have a {}.'.format(str(obj2)))
+                elif len(weapons) == 1:
+                    weapon = weapons[0]
+                    damage = random.randint(40, 50)
+                    target.hit(ctx, damage, 'You hit the {} with the {}.'.format(str(target), str(weapon)))
+                elif obj2.plural:
+                    ctx.console.print_block('You can only use one weapon at a time.')
+                else:
+                    ambiguous_object(ctx, 'use', obj2)
         elif obj.plural:
             ctx.console.print_block('You can only hit one thing at a time.')
         else:

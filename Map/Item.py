@@ -18,5 +18,5 @@ class Item:
     def __str__(self):
         return str(self.object)
 
-    def hit(self, ctx):
-        ctx.console.print_block('Nothing interesting happens.')
+    def hit(self, ctx, damage, msg):
+        ctx.console.print_block(' '.join([msg, 'Nothing interesting happens.']))

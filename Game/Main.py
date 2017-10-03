@@ -2,6 +2,7 @@ import sys
 
 from Game.Console import Console
 from Game.Context import Context
+from Parser.Dictionary import Dictionary
 from Parser.Parser import Parser, ParseError
 
 
@@ -44,6 +45,7 @@ def start_game(name, plaintext):
             'Please enter your name.'
         ])
         name = console.get_input(None)
-    ctx = Context(name, console)
+    dictionary = Dictionary()
+    ctx = Context(name, console, dictionary)
     intro(ctx)
-    repl(Parser(), ctx)
+    repl(Parser(dictionary), ctx)

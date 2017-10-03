@@ -13,8 +13,8 @@ class ParseError(Exception):
 
 class Parser:
 
-    def __init__(self):
-        self.dictionary = Dictionary()
+    def __init__(self, dictionary):
+        self.dictionary = dictionary
 
     def parse_verb(self, tokens):
         verb = None
@@ -35,7 +35,7 @@ class Parser:
     def parse_object(self, tokens):
         if tokens and (tokens[0] == 'a' or tokens[0] == 'the'):
             tokens = tokens[1:]
-        if not tokens or tokens[0] == 'and':
+        if not tokens or tokens[0] == 'and' or tokens[0] == 'with' or tokens[0] == 'using':
             return None, tokens
         adjectives = set()
         while tokens:
@@ -71,16 +71,22 @@ class Parser:
             if tokens and tokens[0] == 'to':
                 tokens = tokens[1:]
                 if not tokens:
-                    raise ParseError('{} to what?'.format(verb.token))
+                    raise ParseError('{} to what?'.format(str(verb)))
                 indirect = direct
                 direct, tokens = self.parse_object(tokens)
             else:
                 indirect, tokens = self.parse_object(tokens)
+            using = None
+            if tokens and (tokens[0] == 'with' or tokens[0] == 'using'):
+                tokens = tokens[1:]
+                if not tokens:
+                    raise ParseError('{} using what?'.format(str(verb)))
+                using, tokens = self.parse_object(tokens)
             if verb.direct_required and not direct:
-                raise ParseError('{} requires a direct object'.format(verb.token))
+                raise ParseError('{} requires a direct object'.format(str(verb)))
             if verb.indirect_required and not indirect:
-                raise ParseError('{} requires an indirect object'.format(verb.token))
-            cmd = Command(verb, direct=direct, indirect=indirect)
+                raise ParseError('{} requires an indirect object'.format(str(verb)))
+            cmd = Command(verb, direct=direct, indirect=indirect, using=using)
         if tokens and tokens[0] == 'and':
             return [cmd] + self.parse(s, ctx, tokens=tokens[1:])
         if tokens:

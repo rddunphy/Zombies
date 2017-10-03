@@ -32,5 +32,6 @@ DIRECTIONS = {
 
 ADJECTIVES = {
     Word('wooden'),
-    Word('big', aliases=['large', 'huge'])
+    Word('big', aliases=['large', 'huge']),
+    Word('dead', aliases=['deceased'])
 }
