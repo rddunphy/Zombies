@@ -12,5 +12,5 @@ class Agent(Item):
         self.health -= damage
         if self.health < 0:
             self.health = 0
-            self.object.adjectives.add(ctx.dictionary.adjectives['dead'])
+            self.object.adjectives.add(ctx.dictionary.get('dead'))
             self.description = self.dead_description

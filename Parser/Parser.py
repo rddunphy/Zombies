@@ -1,10 +1,7 @@
 from Parser.Command import Command
-from Parser.Dictionary import Dictionary
 from Parser.Object import Object
-
-
-def is_valid_object(ctx, object_):
-    return not object_ or object_ in ctx.available_items() or object_ in {'north', 'south', 'east', 'west'}
+from Parser.Word import Verb, Article, Noun, Adjective, DirectionWord
+from Parser.language_tools import capitalise_first_letter
 
 
 class ParseError(Exception):
@@ -17,45 +14,42 @@ class Parser:
         self.dictionary = dictionary
 
     def parse_verb(self, tokens):
-        verb = None
         if len(tokens) > 1:
-            first_two_words = tokens[0] + ' ' + tokens[1]
-            if first_two_words in self.dictionary.verbs:
-                verb = self.dictionary.verbs[first_two_words]
-                tokens = tokens[2:]
-        if not verb and tokens[0] in self.dictionary.verbs:
-            verb = self.dictionary.verbs[tokens[0]]
-            tokens = tokens[1:]
-        if not verb:
-            raise ParseError('I do not recognise {} as a verb.'.format(tokens[0]))
-        if verb.elementary and tokens:
-            raise ParseError('I can\'t {} things.'.format(verb.token))
-        return verb, tokens
+            first_two_tokens = '{} {}'.format(tokens[0], tokens[1])
+            if isinstance(self.dictionary.get(first_two_tokens), Verb):
+                return self.dictionary.get(first_two_tokens), tokens[2:]
+        token = tokens[0]
+        if isinstance(self.dictionary.get(token), Verb):
+            return self.dictionary.get(token), tokens[1:]
+        raise ParseError('I do not recognise {} as a verb.'.format(token))
 
     def parse_object(self, tokens):
-        if tokens and (tokens[0] == 'a' or tokens[0] == 'the'):
+        if not tokens:
+            return None, tokens
+        word = self.dictionary.get(tokens[0])
+        if isinstance(word, Article):
             tokens = tokens[1:]
-        if not tokens or tokens[0] == 'and' or tokens[0] == 'with' or tokens[0] == 'using':
+            if not tokens:
+                raise ParseError('Article should be followed by a noun phrase.')
+            word = self.dictionary.get(tokens[0])
+        if not isinstance(word, Noun) and not isinstance(word, Adjective):
             return None, tokens
         adjectives = set()
         while tokens:
-            t = tokens[0]
+            token = tokens[0]
+            word = self.dictionary.get(token)
             tokens = tokens[1:]
-            if t in self.dictionary.adjectives:
-                adjectives.add(self.dictionary.adjectives[t])
-            elif t in self.dictionary.nouns:
-                noun = self.dictionary.nouns[t]
-                return Object(noun, adjectives=adjectives), tokens
-            elif t in self.dictionary.plural_nouns:
-                noun = self.dictionary.plural_nouns[t]
-                return Object(noun, plural=True, adjectives=adjectives), tokens
+            if isinstance(word, Adjective):
+                adjectives.add(word)
+            elif isinstance(word, Noun):
+                return Object(word, plural=self.dictionary.is_plural(token), adjectives=adjectives), tokens
             else:
-                raise ParseError('I don\'t recognise {} as a noun.'.format(t))
+                raise ParseError('I don\'t recognise {} as a noun.'.format(token))
         raise ParseError('I expect a noun after this adjective.')
 
     def parse_direction(self, tokens):
-        if tokens and tokens[0] in self.dictionary.directions:
-            return self.dictionary.directions[tokens[0]], tokens[1:]
+        if tokens and isinstance(self.dictionary.get(tokens[0]), DirectionWord):
+            return self.dictionary.get(tokens[0]).direction, tokens[1:]
         else:
             raise ParseError('Direction expected.')
 
@@ -71,7 +65,7 @@ class Parser:
             if tokens and tokens[0] == 'to':
                 tokens = tokens[1:]
                 if not tokens:
-                    raise ParseError('{} to what?'.format(str(verb)))
+                    raise ParseError('{} to what?'.format(capitalise_first_letter(str(verb))))
                 indirect = direct
                 direct, tokens = self.parse_object(tokens)
             else:
@@ -80,12 +74,14 @@ class Parser:
             if tokens and (tokens[0] == 'with' or tokens[0] == 'using'):
                 tokens = tokens[1:]
                 if not tokens:
-                    raise ParseError('{} using what?'.format(str(verb)))
+                    raise ParseError('{} using what?'.format(capitalise_first_letter(str(verb))))
                 using, tokens = self.parse_object(tokens)
             if verb.direct_required and not direct:
-                raise ParseError('{} requires a direct object'.format(str(verb)))
+                raise ParseError('{} requires a direct object'.format(capitalise_first_letter(str(verb))))
             if verb.indirect_required and not indirect:
-                raise ParseError('{} requires an indirect object'.format(str(verb)))
+                raise ParseError('{} requires an indirect object'.format(capitalise_first_letter(str(verb))))
+            if verb.elementary and (direct or indirect or using):
+                raise ParseError('I can\'t {} things.'.format(verb.token))
             cmd = Command(verb, direct=direct, indirect=indirect, using=using)
         if tokens and tokens[0] == 'and':
             return [cmd] + self.parse(s, ctx, tokens=tokens[1:])

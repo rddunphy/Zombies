@@ -1,10 +1,10 @@
 from Game.Executor import help_, hit, look, move, exit_, take, inventory, give, drop
 from Map.Direction import Direction
-from Parser.Word import Noun
+from Parser.Word import Noun, DirectionWord, Adjective, Article
 from Parser.Word import Verb
-from Parser.Word import Word
 
-VERBS = {
+
+WORDS = {
     Verb('help', help_, aliases=['help me', 'show help'], elementary=True),
     Verb('hit', hit, aliases=['punch', 'attack', 'kill'], direct_required=True),
     Verb('look', look, aliases=['look around'], elementary=True),
@@ -15,25 +15,22 @@ VERBS = {
     Verb('take', take, aliases=['pick up', 'lift'], direct_required=True),
     Verb('drop', drop, aliases=['put down'], direct_required=True),
     Verb('give', give, direct_required=True, indirect_required=True),
-    Verb('inventory', inventory, aliases=['show inventory'], elementary=True)
-}
+    Verb('inventory', inventory, aliases=['show inventory'], elementary=True),
 
-NOUNS = {
     Noun('zombie', plurals=['zombies']),
-    Noun('board', aliases=['plank'], plurals=['boards, planks'])
-}
+    Noun('board', aliases=['plank'], plurals=['boards, planks']),
 
-DIRECTIONS = {
-    (Word('north'), Direction.NORTH),
-    (Word('south'), Direction.SOUTH),
-    (Word('east'), Direction.EAST),
-    (Word('west'), Direction.WEST),
-    (Word('up', aliases=['upstairs']), Direction.UP),
-    (Word('down', aliases=['downstairs']), Direction.DOWN)
-}
+    DirectionWord('north', Direction.NORTH),
+    DirectionWord('south', Direction.SOUTH),
+    DirectionWord('east', Direction.EAST),
+    DirectionWord('west', Direction.WEST),
+    DirectionWord('up', Direction.UP, aliases=['upstairs']),
+    DirectionWord('down', Direction.DOWN, aliases=['downstairs']),
 
-ADJECTIVES = {
-    Word('wooden'),
-    Word('big', aliases=['large', 'huge']),
-    Word('dead', aliases=['deceased'])
-}
+    Adjective('wooden'),
+    Adjective('big', aliases=['large', 'huge']),
+    Adjective('dead', aliases=['deceased']),
+
+    Article('a', aliases=['an']),
+    Article('the'),
+} # with using and

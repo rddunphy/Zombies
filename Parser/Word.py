@@ -1,4 +1,5 @@
 
+
 class Word:
 
     def __init__(self, token, aliases=None):
@@ -34,3 +35,18 @@ class Noun(Word):
             self.plurals = plurals
         else:
             self.plurals = []
+
+
+class DirectionWord(Word):
+
+    def __init__(self, token, direction, aliases=None):
+        super(DirectionWord, self).__init__(token, aliases=aliases)
+        self.direction = direction
+
+
+class Adjective(Word):
+    pass
+
+
+class Article(Word):
+    pass

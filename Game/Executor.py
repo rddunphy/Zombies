@@ -39,7 +39,7 @@ def exit_(cmd, ctx):
 
 
 def view_surroundings(ctx):
-    ctx.console.print_block(ctx.location.description, title=ctx.location.name)
+    ctx.console.print_block(ctx.location.get_description(ctx), title=ctx.location.name)
 
 
 def look(cmd, ctx):
