@@ -3,8 +3,8 @@ from Map.Item import Item
 
 class Agent(Item):
 
-    def __init__(self, description, dead_description, object_):
-        super(Agent, self).__init__(description, object_)
+    def __init__(self, description, dead_description, object_, weight):
+        super(Agent, self).__init__(description, object_, weight)
         self.dead_description = dead_description
         self.health = 100
 

@@ -3,9 +3,10 @@ from Parser.Object import Object
 
 class Item:
 
-    def __init__(self, description, object_):
+    def __init__(self, description, object_, weight):
         self.description = description
         self.object = object_
+        self.weight = weight
 
     def __eq__(self, other):
         if isinstance(other, Item):

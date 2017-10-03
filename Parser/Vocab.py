@@ -1,19 +1,21 @@
-from Game.Executor import help_, hit, look, move, exit_, take, inventory, give
+from Game.Executor import help_, hit, look, move, exit_, take, inventory, give, drop
 from Map.Direction import Direction
 from Parser.Word import Noun
 from Parser.Word import Verb
 from Parser.Word import Word
 
 VERBS = {
-    Verb('help', help_, aliases=['help me'], elementary=True),
+    Verb('help', help_, aliases=['help me', 'show help'], elementary=True),
     Verb('hit', hit, aliases=['punch', 'attack', 'kill'], direct_required=True),
     Verb('look', look, aliases=['look around'], elementary=True),
     Verb('look at', look, aliases=['examine', 'inspect'], direct_required=True),
     Verb('move', move, aliases=['go', 'walk', 'go to'], direction_required=True),
+    Verb('run', move, aliases=['run away', 'flee', 'sprint', 'escape'], direction_required=True),
     Verb('exit', exit_, aliases=['quit'], elementary=True),
-    Verb('take', take, aliases=['pick up'], direct_required=True),
+    Verb('take', take, aliases=['pick up', 'lift'], direct_required=True),
+    Verb('drop', drop, aliases=['put down'], direct_required=True),
     Verb('give', give, direct_required=True, indirect_required=True),
-    Verb('inventory', inventory, elementary=True)
+    Verb('inventory', inventory, aliases=['show inventory'], elementary=True)
 }
 
 NOUNS = {

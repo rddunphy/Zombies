@@ -6,8 +6,8 @@ from Map.Item import Item
 
 class Zombie(Agent):
 
-    def __init__(self, description, dead_description, object_):
-        super(Zombie, self).__init__(description, dead_description, object_)
+    def __init__(self, description, dead_description, object_, weight):
+        super(Zombie, self).__init__(description, dead_description, object_, weight)
 
     def hit(self, ctx, damage, msg):
         if self.health == 0:

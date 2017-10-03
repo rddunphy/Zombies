@@ -10,6 +10,7 @@ class Context:
         self.console = console
         self.health = 100
         self.inventory = []
+        self.inventory_capacity = 60
         self.dictionary = dictionary
         self.known_words = {'look', 'help', 'inventory', 'quit', 'go', 'north', 'south', 'east', 'west'}
 
@@ -22,3 +23,9 @@ class Context:
 
     def hit(self, damage):
         self.health -= damage
+
+    def remaining_inventory_capacity(self):
+        cap = self.inventory_capacity
+        for item in self.inventory:
+            cap -= item.weight
+        return cap

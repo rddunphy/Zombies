@@ -30,7 +30,7 @@ def repl(parser, ctx):
         for cmd in cmds:
             cmd.verb.fn(cmd, ctx)
     except ParseError as err:
-        print(err)
+        ctx.console.print_block(str(err))
     if ctx.health <= 0:
         game_over(ctx)
     else:
