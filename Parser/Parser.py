@@ -1,6 +1,6 @@
 from Parser.Command import Command
 from Parser.Object import Object
-from Parser.Word import Verb, Article, Noun, Adjective, DirectionWord
+from Parser.Word import Verb, Article, Noun, Adjective, DirectionWord, Conjunction
 from Parser.language_tools import capitalise_first_letter
 
 
@@ -83,7 +83,7 @@ class Parser:
             if verb.elementary and (direct or indirect or using):
                 raise ParseError('I can\'t {} things.'.format(verb.token))
             cmd = Command(verb, direct=direct, indirect=indirect, using=using)
-        if tokens and tokens[0] == 'and':
+        if tokens and isinstance(self.dictionary.get(tokens[0]), Conjunction):
             return [cmd] + self.parse(s, ctx, tokens=tokens[1:])
         if tokens:
             raise ParseError('Leftover tokens: {}'.format(' '.join(tokens)))

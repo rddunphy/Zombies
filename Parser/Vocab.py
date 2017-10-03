@@ -1,6 +1,6 @@
 from Game.Executor import help_, hit, look, move, exit_, take, inventory, give, drop
 from Map.Direction import Direction
-from Parser.Word import Noun, DirectionWord, Adjective, Article
+from Parser.Word import Noun, DirectionWord, Adjective, Article, Preposition, Conjunction
 from Parser.Word import Verb
 
 
@@ -33,4 +33,9 @@ WORDS = {
 
     Article('a', aliases=['an']),
     Article('the'),
-} # with using and
+
+    Preposition('with', aliases=['using']),
+    Preposition('to'),
+
+    Conjunction('and')
+}

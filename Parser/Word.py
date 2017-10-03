@@ -50,3 +50,11 @@ class Adjective(Word):
 
 class Article(Word):
     pass
+
+
+class Preposition(Word):
+    pass
+
+
+class Conjunction(Word):
+    pass
