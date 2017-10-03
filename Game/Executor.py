@@ -1,11 +1,24 @@
 import random
 import sys
 
-from Map.Location import LOCATIONS
-
 
 def unknown_object(ctx, verb, obj):
-    ctx.console.print_block('I don\'t know how to {} "{}".'.format(verb, obj))
+    ctx.console.print_block('There is no {} to {}.'.format(str(obj), str(verb)))
+
+
+def ambiguous_object(ctx, verb, obj):
+    ctx.console.print_block('There\'s more than one {} to {}.'.format(str(obj), str(verb)))
+
+
+def locate_object(ctx, obj):
+    candidates = []
+    for item in ctx.location.items:
+        if item == obj:
+            candidates.append(item)
+    for item in ctx.inventory:
+        if item == obj:
+            candidates.append(item)
+    return candidates
 
 
 def exit_(cmd, ctx):
@@ -16,71 +29,87 @@ def exit_(cmd, ctx):
         sys.exit(0)
 
 
+def view_surroundings(ctx):
+    ctx.console.print_block(ctx.location.description, title=ctx.location.name)
+
+
 def look(cmd, ctx):
-    item = cmd.direct
-    if not item:
-        ctx.console.print_block(ctx.location.description, title=ctx.location.name)
-    elif item.token in ctx.location.items:
-        ctx.console.print_block(ctx.location.items[item.token].description)
+    obj = cmd.direct
+    if not obj:
+        view_surroundings(ctx)
     else:
-        unknown_object(ctx, 'look at', item)
+        items = locate_object(ctx, obj)
+        if not items:
+            unknown_object(ctx, cmd.verb, obj)
+        elif len(items) == 1:
+            ctx.console.print_block(items[0].description)
+        elif obj.plural:
+            for item in items:
+                ctx.console.print_block(item.description)
+        else:
+            ambiguous_object(ctx, cmd.verb, obj)
 
 
 def take(cmd, ctx):
-    item = cmd.direct
-    if not item:
+    obj = cmd.direct
+    if not obj:
         ctx.console.print_block('What do you want to pick up?')
-    elif item.token in ctx.location.items:
-        ctx.inventory[item.token] = ctx.location.items[item.token]
-        del ctx.location.items[item.token]
-        ctx.console.print_block('You pick up the {}'.format(item))
     else:
-        unknown_object(ctx, 'pick up', item)
+        items = locate_object(ctx, obj)
+        if not items:
+            unknown_object(ctx, cmd.verb, obj)
+        elif len(items) == 1:
+            item = items[0]
+            ctx.inventory.append(item)
+            ctx.location.items.remove(item)
+            ctx.console.print_block('You pick up the {}.'.format(item))
+        elif obj.plural:
+            for item in items:
+                ctx.inventory.append(item)
+                ctx.location.items.remove(item)
+                ctx.console.print_block('You pick up the {}.'.format(item))
+        else:
+            ambiguous_object(ctx, cmd.verb, obj)
 
 
 def inventory(cmd, ctx):
-    if cmd.direct:
-        unknown_object(cmd, cmd.verb, cmd.direct)
+    if not ctx.inventory:
+        ctx.console.print_block('You have nothing in your inventory.')
     else:
-        ctx.console.print_block('Your inventory contains:', stats=ctx.inventory.keys())
+        items = [str(item) for item in ctx.inventory]
+        ctx.console.print_block('Your inventory contains:', stats=items)
 
 
 def move(cmd, ctx):
-    if not cmd.direct:
+    if not cmd.direction:
         ctx.console.print_block('Where do you want to go?')
-    elif cmd.direct.token in ctx.location.directions:
-        ctx.move(LOCATIONS, cmd.direct.token)
-        cmd.direct = None
-        look(cmd, ctx)
     else:
-        unknown_object(ctx, 'go', cmd.direct)
+        if cmd.direction in ctx.location.directions.keys():
+            ctx.move(cmd.direction)
+            view_surroundings(ctx)
+        else:
+            ctx.console.print_block('There\'s no way to go {} from here.'.format(cmd.direction.value))
 
 
 def hit(cmd, ctx):
-    if not cmd.direct:
+    obj = cmd.direct
+    if not obj:
         ctx.console.print_block('What do you want to hit?')
-    elif cmd.direct.token == 'zombie':
-        damage = random.randint(20, 30)
-        ctx.health -= damage
-        stats = [
-            'damage: {}'.format(damage),
-            'health: {}'.format(ctx.health)
-        ]
-        ctx.console.print_block('You punch the zombie. The zombie snarls and takes a bite out of you.', stats=stats)
     else:
-        unknown_object(ctx, cmd.verb, cmd.direct)
+        items = locate_object(ctx, obj)
+        if not items:
+            unknown_object(ctx, cmd.verb, obj)
+        elif len(items) == 1:
+            items[0].hit(ctx)
+        elif obj.plural:
+            ctx.console.print_block('You can only hit one thing at a time.')
+        else:
+            ambiguous_object(ctx, cmd.verb, obj)
 
 
 def help_(cmd, ctx):
-    if cmd.direct and cmd.direct.token != 'me':
-        unknown_object(ctx, cmd.verb, cmd.direct)
-    else:
-        ctx.console.print_block('Try entering a verb followed by an object.')
+    ctx.console.print_block('Try entering a verb followed by an object.')
 
 
 def give(cmd, ctx):
     print('giving not yet implemented')
-
-
-def execute(cmd, ctx):
-    cmd.verb.fn(cmd, ctx)

@@ -1,15 +1,20 @@
+from Map.Map import Map
+
+
 class Context:
-    def __init__(self, name, location, console):
+
+    def __init__(self, name, console):
         self.name = name
-        self.location = location
+        self.map = Map()
+        self.location = self.map.locations[0]
         self.console = console
         self.health = 100
-        self.inventory = {}
+        self.inventory = []
         self.known_words = {'look', 'help', 'inventory', 'quit', 'go', 'north', 'south', 'east', 'west'}
 
-    def move(self, locations, direction):
+    def move(self, direction):
         loc = self.location.directions[direction]
-        self.location = locations[loc]
+        self.location = self.map.locations[loc]
 
     def available_items(self):
-        return list(self.inventory.keys()) + list(self.location.items.keys())
+        return self.inventory + self.location.items

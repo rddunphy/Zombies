@@ -2,9 +2,7 @@ import sys
 
 from Game.Console import Console
 from Game.Context import Context
-from Game.Executor import execute
-from Map.Location import LOCATIONS
-from Parser.Parser import Parser
+from Parser.Parser import Parser, ParseError
 
 
 def intro(ctx):
@@ -26,9 +24,12 @@ def game_over(ctx):
 
 def repl(parser, ctx):
     s = ctx.console.get_input(ctx)
-    cmd = parser.parse(s, ctx)
-    if cmd:
-        execute(cmd, ctx)
+    try:
+        cmds = parser.parse(s, ctx)
+        for cmd in cmds:
+            cmd.verb.fn(cmd, ctx)
+    except ParseError as err:
+        print(err)
     if ctx.health <= 0:
         game_over(ctx)
     else:
@@ -43,6 +44,6 @@ def start_game(name, plaintext):
             'Please enter your name.'
         ])
         name = console.get_input(None)
-    ctx = Context(name, LOCATIONS[0], console)
+    ctx = Context(name, console)
     intro(ctx)
     repl(Parser(), ctx)
