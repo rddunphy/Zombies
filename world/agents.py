@@ -1,7 +1,7 @@
 import random
 
 from world.items import Item
-from language.language_tools import list_of_words, add_indefinite_article
+from language.language_tools import list_of_words, add_indefinite_article, build_object
 
 
 class Agent(Item):
@@ -57,3 +57,12 @@ class Zombie(Agent):
                 'health: {}'.format(self.health),
             ]
             ctx.console.print_block(msg, stats=stats)
+
+
+class BankerZombie(Zombie):
+    def __init__(self, dictionary):
+        description = ('The cross-eyed zombie is ignoring you. He appears to have been a fat banker at one '
+                       'point, but is now only interested in the handful of brains he is currently nibbling on.')
+        dead_description = 'The zombie is lying on the ground in pieces. A maggot is crawling out of its left ear.'
+        object_ = build_object(dictionary, 'fat cross-eyed zombie')
+        super(BankerZombie, self).__init__(description, dead_description, object_, 95)

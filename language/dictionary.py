@@ -1,11 +1,10 @@
 from game.actions import help_, hit, look, move, exit_, take, inventory, give, drop
-from world.map import Direction
+from world.locations import Direction
 from language.words import Noun, DirectionWord, Adjective, Article, Preposition, Conjunction
 from language.words import Verb
 
 
 class DictionaryEntry:
-
     def __init__(self, word, is_plural=False, vowel_sound_cached=False, vowel_sound=False):
         self.word = word
         self.is_plural = is_plural
@@ -14,7 +13,6 @@ class DictionaryEntry:
 
 
 class Dictionary:
-
     def __init__(self):
         self.entries = {}
         self.build()
@@ -58,16 +56,22 @@ VOCABULARY = {
     Noun('zombie', plurals=['zombies']),
     Noun('board', aliases=['plank'], plurals=['boards, planks']),
 
-    DirectionWord('north', Direction.NORTH),
-    DirectionWord('south', Direction.SOUTH),
-    DirectionWord('east', Direction.EAST),
-    DirectionWord('west', Direction.WEST),
+    DirectionWord('north', Direction.N, aliases=['n']),
+    DirectionWord('north-east', Direction.NE, aliases=['northeast', 'north east', 'ne']),
+    DirectionWord('east', Direction.E, aliases=['e']),
+    DirectionWord('south-east', Direction.SE, aliases=['southeast', 'south east', 'se']),
+    DirectionWord('south', Direction.S, aliases=['s']),
+    DirectionWord('south-west', Direction.SW, aliases=['southwest', 'south west', 'sw']),
+    DirectionWord('west', Direction.W, aliases=['w']),
+    DirectionWord('north-west', Direction.NW, aliases=['northwest', 'north west', 'nw']),
     DirectionWord('up', Direction.UP, aliases=['upstairs']),
-    DirectionWord('down', Direction.DOWN, aliases=['downstairs']),
+    DirectionWord('down', Direction.DN, aliases=['downstairs']),
 
     Adjective('wooden'),
     Adjective('big', aliases=['large', 'huge']),
     Adjective('dead', aliases=['deceased']),
+    Adjective('fat', aliases=['obese']),
+    Adjective('cross-eyed'),
 
     Article('a', aliases=['an']),
     Article('the'),

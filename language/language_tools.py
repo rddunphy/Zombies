@@ -1,5 +1,7 @@
 from nltk.corpus import cmudict
 
+from language.words import Object
+
 
 def list_of_words(tokens):
     if len(tokens) > 1:
@@ -36,3 +38,10 @@ def get_indefinite_article(dictionary, token):
 
 def synonyms(dictionary, token1, token2):
     return token1 in dictionary and token2 in dictionary and dictionary.get(token1) == dictionary.get(token2)
+
+
+def build_object(dictionary, phrase):
+    tokens = phrase.split()
+    noun = dictionary.get(tokens[-1])
+    adjectives = [dictionary.get(adj) for adj in tokens[:-1]]
+    return Object(noun, adjectives=set(adjectives))

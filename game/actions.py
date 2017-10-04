@@ -1,6 +1,8 @@
 import random
 import sys
 
+from world.locations import Location
+
 
 def _unknown_object(ctx, verb, obj):
     ctx.console.print_block('There is no {} to {}.'.format(str(obj), str(verb)))
@@ -116,9 +118,14 @@ def move(cmd, ctx):
     if not cmd.direction:
         ctx.console.print_block('Where do you want to go?')
     else:
-        if cmd.direction in ctx.location.directions.keys():
+        location = None
+        if cmd.direction in ctx.location.directions:
+            location = ctx.location.directions[cmd.direction]
+        if isinstance(location, Location):
             ctx.move(cmd.direction)
             view_surroundings(ctx)
+        elif isinstance(location, str):
+            ctx.console.print_block(location)
         else:
             ctx.console.print_block('There\'s no way to go {} from here.'.format(cmd.direction.value))
 

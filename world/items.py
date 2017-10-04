@@ -1,3 +1,4 @@
+from language.language_tools import build_object
 from language.words import Object
 
 
@@ -27,3 +28,9 @@ class Item:
 
     def get_description(self, ctx):
         return self.description
+
+
+class WoodenBoard(Item):
+    def __init__(self, dictionary):
+        object_ = build_object(dictionary, 'wooden board')
+        super(WoodenBoard, self).__init__('It\'s a fairly plain but sturdy plank of wood.', object_, 2)

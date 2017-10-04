@@ -1,9 +1,9 @@
 import sys
 
 from game.console import Console
-from world.map import Map
 from language.dictionary import Dictionary
 from language.parser import Parser, ParseError
+from world.locations import build_map
 
 
 def _intro(ctx):
@@ -52,11 +52,9 @@ def start_game(name, plaintext):
 
 
 class Context:
-
     def __init__(self, name, console, dictionary):
         self.name = name
-        self.map = Map(dictionary)
-        self.location = self.map.locations[0]
+        self.location = build_map(dictionary)
         self.console = console
         self.health = 100
         self.inventory = []
@@ -65,8 +63,7 @@ class Context:
         self.known_words = {'look', 'help', 'inventory', 'quit', 'go', 'north', 'south', 'east', 'west'}
 
     def move(self, direction):
-        loc = self.location.directions[direction]
-        self.location = self.map.locations[loc]
+        self.location = self.location.directions[direction]
 
     def available_items(self):
         return self.inventory + self.location.items
