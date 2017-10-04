@@ -1,4 +1,12 @@
 # Zombies
-A zombie console game.
 
-Put `zombies` on your PATH, put `zombies.py` in the same directory, open a terminal, and type `zombies`.
+A Zork-style console game set in the bonnie toon of Glasgow.
+
+
+## Installation
+
+Put the root directory to your PATH, open a terminal, and type `zombies`. Currently only tested on Ubuntu. Requires:
+
+    * Python 3
+    * prompt-toolkit (pip install prompt-toolkit)
+    * nltk (pip install nltk)
