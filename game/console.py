@@ -13,12 +13,12 @@ YELLOW = '\u001b[33m'
 RESET = '\u001b[0m'
 PROMPT = '> '
 
-style = style_from_dict({Token.Pound: '#006fb8', Token.Toolbar: '#ffffff bg:#333333'})
+_style = style_from_dict({Token.Pound: '#006fb8', Token.Toolbar: '#ffffff bg:#333333'})
 
-history = InMemoryHistory()
+_history = InMemoryHistory()
 
 
-def get_toolbar(ctx):
+def _get_toolbar(ctx):
     if ctx:
         status = ' Health: {} '.format(ctx.health)
     else:
@@ -30,7 +30,7 @@ def get_toolbar(ctx):
     return get_bottom_toolbar_tokens
 
 
-def get_prompt_tokens(cli):
+def _get_prompt_tokens(cli):
     return [(Token.Pound, PROMPT)]
 
 
@@ -83,11 +83,11 @@ class Console:
         self.empty_line()
         if ctx:
             completer = WordCompleter(ctx.known_words, ignore_case=True)
-            s = prompt(get_prompt_tokens=get_prompt_tokens, get_bottom_toolbar_tokens=get_toolbar(ctx),
-                       completer=completer, style=style, history=history).strip()
+            s = prompt(get_prompt_tokens=_get_prompt_tokens, get_bottom_toolbar_tokens=_get_toolbar(ctx),
+                       completer=completer, style=_style, history=_history).strip()
         else:
-            s = prompt(get_prompt_tokens=get_prompt_tokens, get_bottom_toolbar_tokens=get_toolbar(ctx),
-                       style=style).strip()
+            s = prompt(get_prompt_tokens=_get_prompt_tokens, get_bottom_toolbar_tokens=_get_toolbar(ctx),
+                       style=_style).strip()
         if len(s) > 0:
             return s
         return self.get_input(ctx)

@@ -2,15 +2,15 @@ import random
 import sys
 
 
-def unknown_object(ctx, verb, obj):
+def _unknown_object(ctx, verb, obj):
     ctx.console.print_block('There is no {} to {}.'.format(str(obj), str(verb)))
 
 
-def ambiguous_object(ctx, verb, obj):
+def _ambiguous_object(ctx, verb, obj):
     ctx.console.print_block('There\'s more than one {} to {}.'.format(str(obj), str(verb)))
 
 
-def locate_object_in_inventory(ctx, obj):
+def _locate_object_in_inventory(ctx, obj):
     candidates = []
     for item in ctx.inventory:
         if item == obj:
@@ -18,7 +18,7 @@ def locate_object_in_inventory(ctx, obj):
     return candidates
 
 
-def locate_object_in_location(ctx, obj):
+def _locate_object_in_location(ctx, obj):
     candidates = []
     for item in ctx.location.items:
         if item == obj:
@@ -26,13 +26,13 @@ def locate_object_in_location(ctx, obj):
     return candidates
 
 
-def locate_object_anywhere(ctx, obj):
-    return locate_object_in_inventory(ctx, obj) + locate_object_in_location(ctx, obj)
+def _locate_object_anywhere(ctx, obj):
+    return _locate_object_in_inventory(ctx, obj) + _locate_object_in_location(ctx, obj)
 
 
 def exit_(cmd, ctx):
     if cmd.direct:
-        unknown_object(ctx, cmd.verb, cmd.direct)
+        _unknown_object(ctx, cmd.verb, cmd.direct)
     else:
         ctx.console.print_block('Thanks for playing, {}.'.format(ctx.name))
         sys.exit(0)
@@ -47,22 +47,22 @@ def look(cmd, ctx):
     if not obj:
         view_surroundings(ctx)
     else:
-        items = locate_object_anywhere(ctx, obj)
+        items = _locate_object_anywhere(ctx, obj)
         if not items:
-            unknown_object(ctx, cmd.verb, obj)
+            _unknown_object(ctx, cmd.verb, obj)
         elif len(items) == 1:
             ctx.console.print_block(items[0].get_description(ctx))
         elif obj.plural:
             for item in items:
                 ctx.console.print_block(item.get_description(ctx))
         else:
-            ambiguous_object(ctx, cmd.verb, obj)
+            _ambiguous_object(ctx, cmd.verb, obj)
 
 
 def take_item(ctx, item):
-    if (item.weight > ctx.inventory_capacity):
+    if item.weight > ctx.inventory_capacity:
         ctx.console.print_block('The {} is to heavy to lift.'.format(str(item)))
-    elif (item.weight > ctx.remaining_inventory_capacity()):
+    elif item.weight > ctx.remaining_inventory_capacity():
         ctx.console.print_block('There is not enough space in your inventory for the {}.'.format(str(item)))
     else:
         ctx.inventory.append(item)
@@ -72,16 +72,16 @@ def take_item(ctx, item):
 
 def take(cmd, ctx):
     obj = cmd.direct
-    items = locate_object_in_location(ctx, obj)
+    items = _locate_object_in_location(ctx, obj)
     if not items:
-        unknown_object(ctx, cmd.verb, obj)
+        _unknown_object(ctx, cmd.verb, obj)
     elif len(items) == 1:
         take_item(ctx, items[0])
     elif obj.plural:
         for item in items:
             take_item(ctx, item)
     else:
-        ambiguous_object(ctx, cmd.verb, obj)
+        _ambiguous_object(ctx, cmd.verb, obj)
 
 
 def drop_item(ctx, item):
@@ -92,16 +92,16 @@ def drop_item(ctx, item):
 
 def drop(cmd, ctx):
     obj = cmd.direct
-    items = locate_object_in_inventory(ctx, obj)
+    items = _locate_object_in_inventory(ctx, obj)
     if not items:
-        unknown_object(ctx, cmd.verb, obj)
+        _unknown_object(ctx, cmd.verb, obj)
     elif len(items) == 1:
         drop_item(ctx, items[0])
     elif obj.plural:
         for item in items:
             drop_item(ctx, item)
     else:
-        ambiguous_object(ctx, cmd.verb, obj)
+        _ambiguous_object(ctx, cmd.verb, obj)
 
 
 def inventory(cmd, ctx):
@@ -139,9 +139,9 @@ def hit(cmd, ctx):
     if not obj:
         ctx.console.print_block('What do you want to hit?')
     else:
-        items = locate_object_anywhere(ctx, obj)
+        items = _locate_object_anywhere(ctx, obj)
         if not items:
-            unknown_object(ctx, cmd.verb, obj)
+            _unknown_object(ctx, cmd.verb, obj)
         elif len(items) == 1:
             target = items[0]
             obj2 = cmd.using
@@ -149,7 +149,7 @@ def hit(cmd, ctx):
                 damage = random.randint(10, 20)
                 target.hit(ctx, damage, 'You punch the {}.'.format(str(target)))
             else:
-                weapons = locate_object_in_inventory(ctx, obj2)
+                weapons = _locate_object_in_inventory(ctx, obj2)
                 if not weapons:
                     ctx.console.print_block('You don\'t have a {}.'.format(str(obj2)))
                 elif len(weapons) == 1:
@@ -159,11 +159,11 @@ def hit(cmd, ctx):
                 elif obj2.plural:
                     ctx.console.print_block('You can only use one weapon at a time.')
                 else:
-                    ambiguous_object(ctx, 'use', obj2)
+                    _ambiguous_object(ctx, 'use', obj2)
         elif obj.plural:
             ctx.console.print_block('You can only hit one thing at a time.')
         else:
-            ambiguous_object(ctx, cmd.verb, obj)
+            _ambiguous_object(ctx, cmd.verb, obj)
 
 
 def help_(cmd, ctx):
@@ -184,20 +184,20 @@ def give(cmd, ctx):
     elif not obj2:
         ctx.console.print_block('Who do you want to give the {} to?'.format(obj))
     else:
-        recipients = locate_object_in_location(ctx, obj2)
+        recipients = _locate_object_in_location(ctx, obj2)
         if not recipients:
-            unknown_object(ctx, cmd.verb, obj2)
+            _unknown_object(ctx, cmd.verb, obj2)
         elif len(recipients) == 1:
             recipient = recipients[0]
-            items = locate_object_in_inventory(ctx, obj)
+            items = _locate_object_in_inventory(ctx, obj)
             if not items:
-                unknown_object(ctx, cmd.verb, obj)
+                _unknown_object(ctx, cmd.verb, obj)
             elif len(items) == 1:
                 give_item(ctx, items[0], recipient)
             elif obj.plural:
                 for item in items:
                     give_item(ctx, item, recipient)
             else:
-                ambiguous_object(ctx, cmd.verb, obj)
+                _ambiguous_object(ctx, cmd.verb, obj)
         else:
-            ambiguous_object(ctx, cmd.verb, obj2)
+            _ambiguous_object(ctx, cmd.verb, obj2)

@@ -1,8 +1,7 @@
-from Parser.Object import Object
+from language.words import Object
 
 
 class Item:
-
     def __init__(self, description, object_, weight):
         self.description = description
         self.object = object_

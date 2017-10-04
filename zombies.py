@@ -4,7 +4,7 @@
 
 import argparse
 
-from Game.Main import start_game
+from game.game import start_game
 
 
 __author__ = "R. David Dunphy"

@@ -1,7 +1,15 @@
-from Parser.Command import Command
-from Parser.Object import Object
-from Parser.Word import Verb, Article, Noun, Adjective, DirectionWord, Conjunction
-from Parser.language_tools import capitalise_first_letter
+from language.words import Object
+from language.words import Verb, Article, Noun, Adjective, DirectionWord, Conjunction
+from language.language_tools import capitalise_first_letter
+
+
+class Command:
+    def __init__(self, verb, direct=None, indirect=None, using=None, direction=None):
+        self.verb = verb
+        self.direct = direct
+        self.indirect = indirect
+        self.using = using
+        self.direction = direction
 
 
 class ParseError(Exception):
@@ -57,7 +65,7 @@ class Parser:
             raise ParseError('Where do you want to {}?'.format(verb_token))
 
     def parse(self, s, ctx, tokens=None):
-        if tokens == []:
+        if isinstance(tokens, list) and not tokens:
             return None
         if not tokens:
             tokens = s.lower().split()
