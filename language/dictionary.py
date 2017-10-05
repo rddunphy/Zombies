@@ -1,4 +1,4 @@
-from game.actions import help_, hit, look, move, exit_, take, inventory, give, drop
+from game.actions import help_, hit, look, move, exit_, take, inventory, give, drop, stand, lie_down
 from world.locations import Direction
 from language.words import Noun, DirectionWord, Adjective, Article, Preposition, Conjunction
 from language.words import Verb
@@ -52,6 +52,8 @@ VOCABULARY = {
     Verb('drop', drop, aliases=['put down'], direct_required=True),
     Verb('give', give, direct_required=True, indirect_required=True),
     Verb('inventory', inventory, aliases=['show inventory'], elementary=True),
+    Verb('stand up', stand, aliases=['stand', 'get up'], elementary=True),
+    Verb('lie down', lie_down, elementary=True),
 
     Noun('zombie', plurals=['zombies']),
     Noun('banker zombie', aliases=['zombie banker'], plurals=['banker zombies', 'zombie bankers']),

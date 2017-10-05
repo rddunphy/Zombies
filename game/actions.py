@@ -1,5 +1,6 @@
 import random
 import sys
+from enum import Enum
 
 from world.locations import Location
 
@@ -45,6 +46,9 @@ def view_surroundings(ctx):
 
 
 def look(cmd, ctx):
+    if ctx.position == Position.LYING:
+        ctx.console.print_block('You can\'t see much from down here.')
+        return
     obj = cmd.direct
     if not obj:
         view_surroundings(ctx)
@@ -134,6 +138,9 @@ def inventory(cmd, ctx):
 
 
 def move(cmd, ctx):
+    if ctx.position != Position.STANDING:
+        ctx.console.print_block('You can\'t really get anywhere while you\'re {}.'.format(ctx.position.value))
+        return
     if not cmd.direction:
         ctx.console.print_block('Where do you want to go?')
     else:
@@ -227,3 +234,25 @@ def give(cmd, ctx):
                 _ambiguous_object(ctx, cmd.verb, obj)
         else:
             _ambiguous_object(ctx, cmd.verb, obj2)
+
+
+def stand(cmd, ctx):
+    if ctx.position == Position.STANDING:
+        ctx.console.print_block('You are already standing.')
+    else:
+        ctx.console.print_block('You {}.'.format(cmd.verb))
+        ctx.position = Position.STANDING
+
+
+def lie_down(cmd, ctx):
+    if ctx.position == Position.LYING:
+        ctx.console.print_block('You are already lying down.')
+    else:
+        ctx.console.print_block('You {}.'.format(cmd.verb))
+        ctx.position = Position.LYING
+
+
+class Position(Enum):
+    STANDING = 'standing'
+    LYING = 'lying down'
+    SITTING = 'sitting'

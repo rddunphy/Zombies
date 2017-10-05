@@ -59,8 +59,10 @@ class WoodenBoard(Item):
     def __init__(self, dictionary):
         name = 'wooden board'
         short_name = 'board'
-        description = 'It\'s a fairly plain but sturdy plank of wood.'
+        description = ('It\'s a fairly plain but sturdy plank of wood. There is some dried blood at one end of it. '
+                       'Perhaps it was used to hit someone over the head.')
         nouns = {dictionary.get('board')}
         adjectives = {dictionary.get('wooden'), dictionary.get('blood-stained')}
         weight = 2
-        super(WoodenBoard, self).__init__(name, description, weight, nouns, short_name=short_name, adjectives=adjectives)
+        super(WoodenBoard, self).__init__(name, description, weight, nouns, short_name=short_name,
+                                          adjectives=adjectives)

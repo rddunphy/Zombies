@@ -99,7 +99,7 @@ class TownSquareEast(Location):
     def __init__(self, dictionary):
         name = 'East side of town square'
         description = ('You are at the eastern end of a square. A large statue of a lion dominates this area. Behind '
-                       'it is a tall Victorian building that which appears to be the town hall. All the windows are '
+                       'it is a tall Victorian building which appears to be the town hall. All the windows are '
                        'smashed.')
         directions = [
             TownSquareNorthEast, None, None, None, TownSquareSouthEast, TownSquareSouth, TownSquareCentre,

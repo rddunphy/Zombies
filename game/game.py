@@ -1,5 +1,6 @@
 import sys
 
+from game.actions import Position
 from game.console import Console
 from language.dictionary import Dictionary
 from language.parser import Parser, ParseError
@@ -9,7 +10,8 @@ from world.locations import build_map
 def _intro(ctx):
     ctx.console.print_block([
         'Hello, {}!'.format(ctx.name),
-        'You wake up with a headache.'
+        ('You wake up with a headache. You appear to be lying on cobbled ground. It\'s raining. You think you may '
+         'have been hit over the head, but you can\'t remember how you got here.')
     ])
 
 
@@ -59,6 +61,7 @@ class Context:
         self.health = 100
         self.inventory = []
         self.inventory_capacity = 60
+        self.position = Position.LYING
         self.dictionary = dictionary
         self.known_words = {'look', 'help', 'inventory', 'quit', 'go', 'north', 'south', 'east', 'west'}
 
