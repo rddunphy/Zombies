@@ -54,6 +54,8 @@ VOCABULARY = {
     Verb('inventory', inventory, aliases=['show inventory'], elementary=True),
 
     Noun('zombie', plurals=['zombies']),
+    Noun('banker zombie', aliases=['zombie banker'], plurals=['banker zombies', 'zombie bankers']),
+    Noun('banker', plurals=['bankers']),
     Noun('board', aliases=['plank'], plurals=['boards, planks']),
 
     DirectionWord('north', Direction.N, aliases=['n']),
@@ -72,11 +74,13 @@ VOCABULARY = {
     Adjective('dead', aliases=['deceased']),
     Adjective('fat', aliases=['obese']),
     Adjective('cross-eyed'),
+    Adjective('blood-stained', aliases=['bloody']),
 
     Article('a', aliases=['an']),
     Article('the'),
 
     Preposition('with', aliases=['using']),
+    Preposition('from'),
     Preposition('to'),
 
     Conjunction('and')

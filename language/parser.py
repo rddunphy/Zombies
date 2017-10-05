@@ -1,15 +1,16 @@
 from language.words import Object
 from language.words import Verb, Article, Noun, Adjective, DirectionWord, Conjunction
-from language.language_tools import capitalise_first_letter
+from language.language_tools import capitalise_first_letter, tokenise
 
 
 class Command:
-    def __init__(self, verb, direct=None, indirect=None, using=None, direction=None):
+    def __init__(self, verb, direct=None, indirect=None, using=None, direction=None, from_obj=None):
         self.verb = verb
         self.direct = direct
         self.indirect = indirect
         self.using = using
         self.direction = direction
+        self.from_obj = from_obj
 
 
 class ParseError(Exception):
@@ -17,7 +18,6 @@ class ParseError(Exception):
 
 
 class Parser:
-
     def __init__(self, dictionary):
         self.dictionary = dictionary
 
@@ -68,7 +68,7 @@ class Parser:
         if isinstance(tokens, list) and not tokens:
             return None
         if not tokens:
-            tokens = s.lower().split()
+            tokens = tokenise(self.dictionary, s.lower())
         verb, verb_token, tokens = self.parse_verb(tokens)
         if verb.direction_required:
             direction, tokens = self.parse_direction(tokens, verb_token)
@@ -87,7 +87,12 @@ class Parser:
                     indirect = direct
                     direct = obj2
                     direct_token = obj2_token
-            using = None
+            using, from_obj = None, None
+            if tokens and (tokens[0] == 'from'):
+                tokens = tokens[1:]
+                if not tokens:
+                    raise ParseError('What do you want to {} from?'.format(verb_token))
+                from_obj, from_token, tokens = self.parse_object(tokens, verb_token)
             if tokens and (tokens[0] == 'with' or tokens[0] == 'using'):
                 tokens = tokens[1:]
                 if not tokens:
@@ -99,7 +104,7 @@ class Parser:
                 raise ParseError('What do you want to {} the {} to?'.format(verb_token, direct_token))
             if verb.elementary and (direct or indirect or using):
                 raise ParseError('You can\'t {} things.'.format(verb_token))
-            cmd = Command(verb, direct=direct, indirect=indirect, using=using)
+            cmd = Command(verb, direct=direct, indirect=indirect, using=using, from_obj=from_obj)
         if tokens and isinstance(self.dictionary.get(tokens[0]), Conjunction):
             next_cmds = self.parse(s, ctx, tokens=tokens[1:])
             if next_cmds:

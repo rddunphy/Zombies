@@ -61,27 +61,46 @@ def look(cmd, ctx):
             _ambiguous_object(ctx, cmd.verb, obj)
 
 
-def take_item(ctx, item):
+def take_item(ctx, item, from_item):
     if item.weight > ctx.inventory_capacity:
         ctx.console.print_block('The {} is to heavy to lift.'.format(str(item)))
     elif item.weight > ctx.remaining_inventory_capacity():
         ctx.console.print_block('There is not enough space in your inventory for the {}.'.format(str(item)))
-    else:
+    elif not from_item:
         ctx.inventory.append(item)
         ctx.location.items.remove(item)
         ctx.console.print_block('You pick up the {}.'.format(item))
+    elif from_item.take_from(ctx, item):
+        ctx.inventory.append(item)
+
+
+def take_from(ctx, from_obj):
+    items = _locate_object_in_location(ctx, from_obj)
+    if not items:
+        _unknown_object(ctx, 'take from', from_obj)
+    elif len(items) == 1:
+        return items[0]
+    else:
+        _ambiguous_object(ctx, 'take from', from_obj)
 
 
 def take(cmd, ctx):
     obj = cmd.direct
-    items = _locate_object_in_location(ctx, obj)
+    from_item = None
+    if cmd.from_obj:
+        from_item = take_from(ctx, cmd.from_obj)
+        if not from_item:
+            return
+        items = from_item.locate_in_items(obj)
+    else:
+        items = _locate_object_in_location(ctx, obj)
     if not items:
         _unknown_object(ctx, cmd.verb, obj)
     elif len(items) == 1:
-        take_item(ctx, items[0])
+        take_item(ctx, items[0], from_item)
     elif obj.plural:
         for item in items:
-            take_item(ctx, item)
+            take_item(ctx, item, from_item)
     else:
         _ambiguous_object(ctx, cmd.verb, obj)
 

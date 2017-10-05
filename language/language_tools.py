@@ -1,7 +1,5 @@
 from nltk.corpus import cmudict
 
-from language.words import Object
-
 
 def list_of_words(tokens):
     if len(tokens) > 1:
@@ -14,7 +12,7 @@ def capitalise_first_letter(token):
 
 
 def add_indefinite_article(dictionary, phrase):
-    tokens = phrase.split()
+    tokens = tokenise(dictionary, phrase)
     return '{} {}'.format(get_indefinite_article(dictionary, tokens[0]), phrase)
 
 
@@ -25,7 +23,8 @@ def get_indefinite_article(dictionary, token):
         else:
             return 'a'
     else:
-        for syllables in cmudict.dict().get(token, []):
+        cmu_token = token.split()[0]
+        for syllables in cmudict.dict().get(cmu_token, []):
             if syllables[0][-1].isdigit():
                 dictionary.entries[token].vowel_sound_cached = True
                 dictionary.entries[token].vowel_sound = True
@@ -34,14 +33,22 @@ def get_indefinite_article(dictionary, token):
                 dictionary.entries[token].vowel_sound_cached = True
                 dictionary.entries[token].vowel_sound = False
                 return 'a'
+    return 'a'
 
 
 def synonyms(dictionary, token1, token2):
     return token1 in dictionary and token2 in dictionary and dictionary.get(token1) == dictionary.get(token2)
 
 
-def build_object(dictionary, phrase):
-    tokens = phrase.split()
-    noun = dictionary.get(tokens[-1])
-    adjectives = [dictionary.get(adj) for adj in tokens[:-1]]
-    return Object(noun, adjectives=set(adjectives))
+def tokenise(dictionary, phrase):
+    space_separated = phrase.split()
+    tokens = []
+    while space_separated:
+        n = len(space_separated)
+        for i in range(n):
+            word = ' '.join(space_separated[:n-i])
+            if word in dictionary or i == n-1:
+                tokens.append(word)
+                space_separated = space_separated[n-i:]
+                break
+    return tokens
