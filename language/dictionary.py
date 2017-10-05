@@ -42,7 +42,7 @@ class Dictionary:
 
 VOCABULARY = {
     Verb('help', help_, aliases=['help me', 'show help'], elementary=True),
-    Verb('hit', hit, aliases=['punch', 'attack', 'kill'], direct_required=True),
+    Verb('hit', hit, aliases=['punch', 'attack', 'kill', 'batter'], direct_required=True),
     Verb('look', look, aliases=['look around'], elementary=True),
     Verb('look at', look, aliases=['examine', 'inspect'], direct_required=True),
     Verb('move', move, aliases=['go', 'walk', 'go to'], direction_required=True),
@@ -57,6 +57,14 @@ VOCABULARY = {
     Noun('banker zombie', aliases=['zombie banker'], plurals=['banker zombies', 'zombie bankers']),
     Noun('banker', plurals=['bankers']),
     Noun('board', aliases=['plank'], plurals=['boards, planks']),
+    Noun('ground', aliases=['floor']),
+    Noun('cobbles'),
+    Noun('road'),
+    Noun('tarmac'),
+    Noun('street'),
+    Noun('statue'),
+    Noun('lion'),
+    Noun('lion statue'),
 
     DirectionWord('north', Direction.N, aliases=['n']),
     DirectionWord('north-east', Direction.NE, aliases=['northeast', 'north east', 'ne']),
@@ -75,6 +83,7 @@ VOCABULARY = {
     Adjective('fat', aliases=['obese']),
     Adjective('cross-eyed'),
     Adjective('blood-stained', aliases=['bloody']),
+    Adjective('cobbled'),
 
     Article('a', aliases=['an']),
     Article('the'),

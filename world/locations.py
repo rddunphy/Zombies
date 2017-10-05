@@ -1,6 +1,7 @@
 from enum import Enum
 
 from language.language_tools import list_of_words, add_indefinite_article, capitalise_first_letter
+from world.furnishings import Furnishing, CobbledGround, TarmacGround, LionStatue
 from world.items import WoodenBoard
 from world.agents import Agent, BankerZombie
 
@@ -19,15 +20,12 @@ class Direction(Enum):
 
 
 class Location:
-    def __init__(self, name, description, directions, items=None):
+    def __init__(self, name, description, directions, items):
         self.name = name
         self.description = description
         self.directions_classes = {}
         self.directions = {}
-        if items:
-            self.items = items
-        else:
-            self.items = []
+        self.items = items
         self._assign_directions_classes(directions)
 
     def _assign_directions_classes(self, location_classes):
@@ -47,7 +45,7 @@ class Location:
 
     def get_description(self, ctx):
         sentences = [self.description]
-        things = [item for item in self.items if not isinstance(item, Agent)]
+        things = [item for item in self.items if not isinstance(item, Agent) and not isinstance(item, Furnishing)]
         agents = [item for item in self.items if isinstance(item, Agent)]
         if things:
             s = list_of_words([add_indefinite_article(ctx.dictionary, str(item)) for item in things])
@@ -71,7 +69,8 @@ class TownSquareCentre(Location):
             TownSquareNorth, TownSquareNorthEast, TownSquareEast, TownSquareSouthEast, TownSquareSouth,
             TownSquareSouthWest, TownSquareWest, TownSquareNorthWest
         ]
-        super(TownSquareCentre, self).__init__(name, description, directions)
+        items = [WoodenBoard(dictionary), CobbledGround(dictionary)]
+        super(TownSquareCentre, self).__init__(name, description, directions, items)
 
 
 class TownSquareNorth(Location):
@@ -84,7 +83,7 @@ class TownSquareNorth(Location):
             TownSquareWest, TownSquareNorthWest, None
         ]
         items = [BankerZombie(dictionary)]
-        super(TownSquareNorth, self).__init__(name, description, directions, items=items)
+        super(TownSquareNorth, self).__init__(name, description, directions, items)
 
 
 class TownSquareNorthEast(Location):
@@ -92,7 +91,8 @@ class TownSquareNorthEast(Location):
         name = 'North-east corner of town square'
         description = 'You are in the north-east corner of a square. Streets leave the square to the north and east.'
         directions = [None, None, None, None, TownSquareEast, TownSquareCentre, TownSquareNorth, None]
-        super(TownSquareNorthEast, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareNorthEast, self).__init__(name, description, directions, items)
 
 
 class TownSquareEast(Location):
@@ -105,8 +105,8 @@ class TownSquareEast(Location):
             TownSquareNorthEast, None, None, None, TownSquareSouthEast, TownSquareSouth, TownSquareCentre,
             TownSquareNorth
         ]
-        items = [WoodenBoard(dictionary)]
-        super(TownSquareEast, self).__init__(name, description, directions, items=items)
+        items = [CobbledGround(dictionary), LionStatue(dictionary)]
+        super(TownSquareEast, self).__init__(name, description, directions, items)
 
 
 class TownSquareSouthEast(Location):
@@ -114,7 +114,8 @@ class TownSquareSouthEast(Location):
         name = 'South-east corner of town square'
         description = 'You are in the south-east corner of a square. Streets leave the square to the south and east.'
         directions = [TownSquareEast, None, None, None, None, None, TownSquareSouth, TownSquareCentre]
-        super(TownSquareSouthEast, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareSouthEast, self).__init__(name, description, directions, items)
 
 
 class TownSquareSouth(Location):
@@ -127,7 +128,8 @@ class TownSquareSouth(Location):
             'There doesn\'t seem to be an easy way into the building.', MuseumStreetNorth, TownSquareSouthWest,
             TownSquareWest
         ]
-        super(TownSquareSouth, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareSouth, self).__init__(name, description, directions, items)
 
 
 class TownSquareSouthWest(Location):
@@ -135,7 +137,8 @@ class TownSquareSouthWest(Location):
         name = 'South-west corner of town square'
         description = 'You are in the south-west corner of a square. Streets leave the square to the south and west.'
         directions = [TownSquareWest, TownSquareCentre, TownSquareSouth, None, MuseumStreetNorth, None, None, None]
-        super(TownSquareSouthWest, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareSouthWest, self).__init__(name, description, directions, items)
 
 
 class TownSquareWest(Location):
@@ -148,7 +151,8 @@ class TownSquareWest(Location):
             TownSquareNorthWest, TownSquareNorth, TownSquareCentre, TownSquareSouth, TownSquareSouthWest, None, None,
             None
         ]
-        super(TownSquareWest, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareWest, self).__init__(name, description, directions, items)
 
 
 class TownSquareNorthWest(Location):
@@ -156,7 +160,8 @@ class TownSquareNorthWest(Location):
         name = 'North-west corner of town square'
         description = 'You are in the north-west corner of a square. Streets leave the square to the north and west.'
         directions = [None, None, TownSquareNorth, TownSquareCentre, TownSquareWest, None, None, None]
-        super(TownSquareNorthWest, self).__init__(name, description, directions)
+        items = [CobbledGround(dictionary)]
+        super(TownSquareNorthWest, self).__init__(name, description, directions, items)
 
 
 class MuseumStreetNorth(Location):
@@ -167,7 +172,8 @@ class MuseumStreetNorth(Location):
         directions = [
             TownSquareSouthWest, TownSquareSouth, 'There doesn\'t seem to be an easy way into the building.',
             None, None, None, None, None]
-        super(MuseumStreetNorth, self).__init__(name, description, directions)
+        items = [TarmacGround(dictionary)]
+        super(MuseumStreetNorth, self).__init__(name, description, directions, items)
 
 
 _location_class_list = [TownSquareCentre, TownSquareNorth, TownSquareNorthEast, TownSquareEast, TownSquareSouthEast,

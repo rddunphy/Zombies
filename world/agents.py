@@ -7,13 +7,10 @@ from language.language_tools import list_of_words, add_indefinite_article, capit
 class Agent(Item):
     def __init__(self, name, description, dead_description, weight, nouns, short_name=None, adjectives=None,
                  items=None):
-        super(Agent, self).__init__(name, description, weight, nouns, short_name=short_name, adjectives=adjectives)
+        super(Agent, self).__init__(name, description, weight, nouns, short_name=short_name, adjectives=adjectives,
+                                    items=items)
         self.dead_description = dead_description
         self.health = 100
-        if items:
-            self.items = items
-        else:
-            self.items = []
 
     def is_dead(self):
         return self.health == 0
